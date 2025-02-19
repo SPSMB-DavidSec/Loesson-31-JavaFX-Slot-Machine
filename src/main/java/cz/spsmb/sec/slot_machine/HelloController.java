@@ -8,6 +8,7 @@ import javafx.scene.canvas.GraphicsContext;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Random;
 import java.util.ResourceBundle;
 
 public class HelloController implements Initializable {
@@ -18,33 +19,63 @@ public class HelloController implements Initializable {
 
     final int IMAGE_SIZE = 120;
 
-    Reel[] reels = new Reel[1];
+    Reel[] reels = new Reel[3];
     double x = 0;
-    double y = IMAGE_SIZE*3;
+    double[] y = new double[3];
+
+    Random r = new Random();
+
 
 
     @FXML
-    protected void onHelloButtonClick() {
-
+    protected void onSpinButtonClick() {
+        for (int i = 0; i < reels.length; i++) {
+            reels[i].setSpeed(r.nextInt(60) + 30);
+            reels[i].setSlowDown(r.nextDouble() + 0.5d);
+        }
     }
-
 
     private void tick() {
         for (int i = 0; i < reels.length; i++) {
             Reel reel = reels[i];
             List<Symbol> symbols = reel.getSymbols();
             int symbolsSize = symbols.size();
-            y = (y + reel.getSpeed()) % (symbolsSize * IMAGE_SIZE);
+            y[i] = (y[i] + reel.getSpeed()) % (symbolsSize * IMAGE_SIZE);
 
-            if (reel.getSpeed() > 0.5){
-                reel.setSpeed(Math.max(0.5,reel.getSpeed()-0.05));
+            if (reel.getSpeed() > reel.getMinSpeed()) {
+                reel.setSpeed(Math.max(reel.getMinSpeed(), reel.getSpeed() - reel.getSlowDown()));
             }
-
-            for (int j = 0; j < symbols.size() + 3 ; j++) {
-               int index = j % symbolsSize;
-               gc.drawImage(symbols.get(index).getImage(), x + (i*IMAGE_SIZE), y + (j*IMAGE_SIZE)-(5*IMAGE_SIZE), IMAGE_SIZE, IMAGE_SIZE);
+            if (reel.getSpeed() == reel.getMinSpeed() && (int) y[i] % IMAGE_SIZE == 0) {
+                reel.setSpeed(0);
+                if (!isAnyReelSpinning(reels)){
+                    identifySymbols(y, reels);
+                }
+            }
+            for (int j = 0; j < symbols.size() + 3; j++) {
+                int index = j % symbolsSize;
+                gc.drawImage(symbols.get(index).getImage(), x + (i * IMAGE_SIZE),
+                        y[i] + (j * IMAGE_SIZE) - (symbolsSize * IMAGE_SIZE), IMAGE_SIZE, IMAGE_SIZE);
             }
         }
+    }
+
+    private boolean isAnyReelSpinning(Reel[] reels) {
+       for (Reel reel : reels){
+           if (reel.getSpeed() > 0){
+               return true;
+           }
+       }
+       return false;
+    }
+
+    private void identifySymbols(double[] y, Reel[] reels) {
+        for (int i = 0; i < reels.length; i++) {
+            int index = (int) y[i] / IMAGE_SIZE;
+            System.out.println(reels[0].getSymbols().get(mapIndex(index)).name());
+
+        }
+
+
     }
 
 
@@ -68,9 +99,23 @@ public class HelloController implements Initializable {
     }
 
     private void initSlots() {
-        reels[0] = new Reel(List.of(Symbol.CHERRIES, Symbol.LEMON, Symbol.CLOVER,Symbol.GRAPES,Symbol.GRAPES));//,Symbol.STAR,Symbol.MELON,Symbol.ORANGE,
-        //Symbol.PLUM,Symbol.CHERRIES));
+        reels[0] = new Reel(r.nextInt(60) + 30 , r.nextDouble() + 0.5d, List.of(Symbol.CHERRIES, Symbol.LEMON, Symbol.ORANGE, Symbol.STAR, Symbol.CLOVER
+                , Symbol.GRAPES, Symbol.GRAPES));
 
+        reels[1] = new Reel(r.nextInt(60) + 30 , r.nextDouble() + 0.5d, List.of(Symbol.CHERRIES, Symbol.LEMON, Symbol.ORANGE, Symbol.STAR, Symbol.CLOVER
+                , Symbol.GRAPES, Symbol.GRAPES));
+
+        reels[2] = new Reel(r.nextInt(60) + 30 , r.nextDouble() + 0.5d, List.of(Symbol.CHERRIES, Symbol.LEMON, Symbol.ORANGE, Symbol.STAR, Symbol.CLOVER
+                , Symbol.GRAPES, Symbol.GRAPES));
+
+    }
+
+    public static int mapIndex(int x) {
+        if (x < 2) {
+            return 1 - x;
+        } else {
+            return 8 - x;
+        }
     }
 
 }
