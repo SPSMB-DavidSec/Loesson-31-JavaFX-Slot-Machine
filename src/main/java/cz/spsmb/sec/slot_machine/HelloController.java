@@ -31,19 +31,18 @@ public class HelloController implements Initializable {
 
     private void tick() {
         for (int i = 0; i < reels.length; i++) {
-            List<Symbol> symbols = reels[i].getSymbols();
-            for (int j = 0; j < symbols.size() ; j++) {
-                y = y+reels[i].getSpeed();
+            Reel reel = reels[i];
+            List<Symbol> symbols = reel.getSymbols();
+            int symbolsSize = symbols.size();
+            y = (y + reel.getSpeed()) % (symbolsSize * IMAGE_SIZE);
 
-                if (j == symbols.size() ){
-                    j = 0;
-                }
-                gc.drawImage(symbols.get(j).getImage(), x, y - ((j+1)*120),120,120);
-                System.out.println(j);
-                if(y >= (IMAGE_SIZE * symbols.size())){
-                    y = IMAGE_SIZE*3;
-                }
+            if (reel.getSpeed() > 0.5){
+                reel.setSpeed(Math.max(0.5,reel.getSpeed()-0.05));
+            }
 
+            for (int j = 0; j < symbols.size() + 3 ; j++) {
+               int index = j % symbolsSize;
+               gc.drawImage(symbols.get(index).getImage(), x + (i*IMAGE_SIZE), y + (j*IMAGE_SIZE)-(5*IMAGE_SIZE), IMAGE_SIZE, IMAGE_SIZE);
             }
         }
     }
@@ -69,7 +68,7 @@ public class HelloController implements Initializable {
     }
 
     private void initSlots() {
-        reels[0] = new Reel(List.of(Symbol.CLOVER, Symbol.GRAPES, Symbol.GRAPES,Symbol.LEMON,Symbol.LEMON, Symbol.PLUM,Symbol.CLOVER, Symbol.GRAPES,Symbol.CLOVER, Symbol.GRAPES, Symbol.GRAPES));//,Symbol.STAR,Symbol.MELON,Symbol.ORANGE,
+        reels[0] = new Reel(List.of(Symbol.CHERRIES, Symbol.LEMON, Symbol.CLOVER,Symbol.GRAPES,Symbol.GRAPES));//,Symbol.STAR,Symbol.MELON,Symbol.ORANGE,
         //Symbol.PLUM,Symbol.CHERRIES));
 
     }

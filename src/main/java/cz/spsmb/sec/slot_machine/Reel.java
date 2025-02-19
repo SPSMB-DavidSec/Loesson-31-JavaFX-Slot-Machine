@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Reel {
-    private double speed = 0.2;
+    private double speed = 5;
     private List<Symbol> symbols = new ArrayList<>();
 
     public Reel(List<Symbol> symbols){
