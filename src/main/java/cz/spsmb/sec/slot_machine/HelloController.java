@@ -26,7 +26,6 @@ public class HelloController implements Initializable {
     Random r = new Random();
 
 
-
     @FXML
     protected void onSpinButtonClick() {
         for (int i = 0; i < reels.length; i++) {
@@ -47,7 +46,7 @@ public class HelloController implements Initializable {
             }
             if (reel.getSpeed() == reel.getMinSpeed() && (int) y[i] % IMAGE_SIZE == 0) {
                 reel.setSpeed(0);
-                if (!isAnyReelSpinning(reels)){
+                if (!isAnyReelSpinning(reels)) {
                     identifySymbols(y, reels);
                 }
             }
@@ -60,22 +59,47 @@ public class HelloController implements Initializable {
     }
 
     private boolean isAnyReelSpinning(Reel[] reels) {
-       for (Reel reel : reels){
-           if (reel.getSpeed() > 0){
-               return true;
-           }
-       }
-       return false;
+        for (Reel reel : reels) {
+            if (reel.getSpeed() > 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void identifySymbols(double[] y, Reel[] reels) {
+        Symbol[][] symbols = new Symbol[3][3];
         for (int i = 0; i < reels.length; i++) {
             int index = (int) y[i] / IMAGE_SIZE;
-            System.out.println(reels[0].getSymbols().get(mapIndex(index)).name());
-
+            symbols[i][0] = reels[i].getSymbols().get(mapIndex(index - 1));
+            symbols[i][1] = reels[i].getSymbols().get(mapIndex(index));
+            symbols[i][2] = reels[i].getSymbols().get(mapIndex(index + 1));
+        }
+        for (int i = 0; i < symbols.length; i++) {
+            System.out.println(symbols[2][i] + " " + symbols[1][i] + " " + symbols[0][i]);
         }
 
+        isWinningCombination(symbols);
+    }
 
+    private int isWinningCombination(Symbol[][] symbols) {
+        int multiplication = 1;
+        for (int i = 0; i < symbols.length; i++) {
+            if ((symbols[2][i].equals(symbols[1][i])) &&
+                    (symbols[1][i].equals(symbols[0][i]))) {
+                System.out.println("win in a row " + i +" WIN x" +symbols[0][0].getMultiplication());
+            }
+            if ((symbols[0][0].equals(symbols[1][1])) &&
+                    (symbols[1][1].equals(symbols[2][2]))) {
+                System.out.println("win in a diagonal. WIN x" +symbols[0][0].getMultiplication());
+            }
+            if ((symbols[0][2].equals(symbols[1][1])) &&
+                    (symbols[1][1].equals(symbols[2][0]))) {
+                System.out.println("win in a diagonal. WIN x" + symbols[0][2].getMultiplication());
+
+            }
+        }
+        return multiplication;
     }
 
 
@@ -99,13 +123,13 @@ public class HelloController implements Initializable {
     }
 
     private void initSlots() {
-        reels[0] = new Reel(r.nextInt(60) + 30 , r.nextDouble() + 0.5d, List.of(Symbol.CHERRIES, Symbol.LEMON, Symbol.ORANGE, Symbol.STAR, Symbol.CLOVER
+        reels[0] = new Reel(r.nextInt(60) + 30, r.nextDouble() + 0.5d, List.of(Symbol.CHERRIES, Symbol.LEMON, Symbol.ORANGE, Symbol.STAR, Symbol.CLOVER
                 , Symbol.GRAPES, Symbol.GRAPES));
 
-        reels[1] = new Reel(r.nextInt(60) + 30 , r.nextDouble() + 0.5d, List.of(Symbol.CHERRIES, Symbol.LEMON, Symbol.ORANGE, Symbol.STAR, Symbol.CLOVER
+        reels[1] = new Reel(r.nextInt(60) + 30, r.nextDouble() + 0.5d, List.of(Symbol.CHERRIES, Symbol.LEMON, Symbol.ORANGE, Symbol.STAR, Symbol.CLOVER
                 , Symbol.GRAPES, Symbol.GRAPES));
 
-        reels[2] = new Reel(r.nextInt(60) + 30 , r.nextDouble() + 0.5d, List.of(Symbol.CHERRIES, Symbol.LEMON, Symbol.ORANGE, Symbol.STAR, Symbol.CLOVER
+        reels[2] = new Reel(r.nextInt(60) + 30, r.nextDouble() + 0.5d, List.of(Symbol.CHERRIES, Symbol.LEMON, Symbol.ORANGE, Symbol.STAR, Symbol.CLOVER
                 , Symbol.GRAPES, Symbol.GRAPES));
 
     }
