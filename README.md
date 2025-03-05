@@ -1,4 +1,5 @@
-# Java FX slot machine App
+
+# Java FX slot machine App
 
 ## Introduction
 This Slot Machine application in JavaFX was created to help students practice working with canvas, texture loading, animations, and algorithm design. It features a graphical interface where users can interact with the slot machine, 
