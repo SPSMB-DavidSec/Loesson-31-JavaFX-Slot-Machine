@@ -25,7 +25,7 @@ public class HelloController implements Initializable {
 
 
     static final int IMAGE_SIZE = 120;
-    final static int SPIN_COST = 5;
+    static final int SPIN_COST = 5;
 
     Reel[] reels = new Reel[3];
     double x = 0;
